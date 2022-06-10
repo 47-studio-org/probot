@@ -46,6 +46,7 @@ describe("ManifestCreation", () => {
   describe("createAppUrl", () => {
     afterEach(() => {
       delete process.env.GHE_HOST;
+      delete process.env.GH_ORG;
       delete process.env.GHE_PROTOCOL;
     });
 
@@ -55,10 +56,25 @@ describe("ManifestCreation", () => {
       );
     });
 
+    test("creates an app url when github org is set", () => {
+      process.env.GH_ORG = "testorg";
+      expect(setup.createAppUrl).toEqual(
+        "https://github.com/organizations/testorg/settings/apps/new"
+      );
+    });
+
     test("creates an app url when github host env is set", () => {
       process.env.GHE_HOST = "hiimbex.github.com";
       expect(setup.createAppUrl).toEqual(
         "https://hiimbex.github.com/settings/apps/new"
+      );
+    });
+
+    test("creates an app url when github host env and github org is set", () => {
+      process.env.GHE_HOST = "hiimbex.github.com";
+      process.env.GH_ORG = "testorg";
+      expect(setup.createAppUrl).toEqual(
+        "https://hiimbex.github.com/organizations/testorg/settings/apps/new"
       );
     });
 
@@ -126,7 +142,7 @@ describe("ManifestCreation", () => {
     test("creates an app from a code", () => {
       // checks that getManifest returns a JSON.stringified manifest
       expect(setup.getManifest(pkg, "localhost://3000")).toEqual(
-        '{"description":"🤖 A framework for building GitHub Apps to automate and improve your workflow","hook_attributes":{"url":"localhost://3000/"},"name":"probot","public":true,"redirect_url":"localhost://3000/probot/setup","url":"https://probot.github.io","version":"v1"}'
+        '{"description":"A framework for building GitHub Apps to automate and improve your workflow","hook_attributes":{"url":"localhost://3000/"},"name":"probot","public":true,"redirect_url":"localhost://3000/probot/setup","url":"https://probot.github.io","version":"v1"}'
       );
     });
 

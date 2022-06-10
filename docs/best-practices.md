@@ -1,3 +1,7 @@
+---
+title: Best practices
+---
+
 # Best practices
 
 First and foremost, your app must obey the [The Three Laws of Robotics](https://en.wikipedia.org/wiki/Three_Laws_of_Robotics):
@@ -11,9 +15,19 @@ Now that we agree that nobody will get hurt, here are some tips to make your app
 
 **Contents:**
 
+<!-- toc -->
+
 - [Empathy](#empathy)
+  - [Avoid the uncanny valley](#avoid-the-uncanny-valley)
 - [Autonomy](#autonomy)
+  - [Never take bulk actions without explicit permission](#never-take-bulk-actions-without-explicit-permission)
+  - [Include "dry run" functionality](#include-dry-run-functionality)
 - [Configuration](#configuration)
+  - [Require minimal configuration](#require-minimal-configuration)
+  - [Provide full configuration](#provide-full-configuration)
+  - [Store configuration in the repository](#store-configuration-in-the-repository)
+
+<!-- tocstop -->
 
 ## Empathy
 
@@ -58,7 +72,7 @@ Apps _should_ allow all settings to be customized for each installation.
 
 ### Store configuration in the repository
 
-Any configuration _should_ be stored in the target repository. Unless the app is using files from an established convention, the configuration _should_ be stored in the `.github` directory. See the [API docs for `context.config`](https://probot.github.io/api/latest/classes/context.html#config).
+Any configuration _should_ be stored in the target repository. Unless the app is using files from an established convention, the configuration _should_ be stored in the `.github` directory. See the [API docs for `context.config`](https://probot.github.io/api/latest/classes/context.Context.html#config).
 
 `context.config` supports sharing configs between repositories. If configuration for your app is not available in the target repository, it will be loaded from the `.github` directory of the target organization's `.github` repository.
 

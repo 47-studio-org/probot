@@ -3,6 +3,7 @@ import { ProbotOctokit } from "./probot-octokit";
 import Redis from "ioredis";
 
 import { getOctokitThrottleOptions } from "./get-octokit-throttle-options";
+import { aliasLog } from "../helpers/alias-log";
 
 import type { Logger } from "pino";
 
@@ -43,10 +44,16 @@ export function getProbotOctokitWithDefaults(options: Options) {
     redisConfig: options.redisConfig,
   });
 
-  const defaultOptions: any = {
-    baseUrl: options.baseUrl,
+  let defaultOptions: any = {
     auth: authOptions,
+    log: options.log.child
+      ? aliasLog(options.log.child({ name: "octokit" }))
+      : options.log,
   };
+
+  if (options.baseUrl) {
+    defaultOptions.baseUrl = options.baseUrl;
+  }
 
   if (octokitThrottleOptions) {
     defaultOptions.throttle = octokitThrottleOptions;

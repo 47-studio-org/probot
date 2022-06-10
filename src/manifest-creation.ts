@@ -82,11 +82,13 @@ export class ManifestCreation {
       options
     );
 
-    const { id, webhook_secret, pem } = response.data;
+    const { id, client_id, client_secret, webhook_secret, pem } = response.data;
     await this.updateEnv({
       APP_ID: id.toString(),
       PRIVATE_KEY: `"${pem}"`,
       WEBHOOK_SECRET: webhook_secret,
+      GITHUB_CLIENT_ID: client_id,
+      GITHUB_CLIENT_SECRET: client_secret,
     });
 
     return response.data.html_url;
@@ -99,8 +101,8 @@ export class ManifestCreation {
 
   get createAppUrl() {
     const githubHost = process.env.GHE_HOST || `github.com`;
-    return `${
-      process.env.GHE_PROTOCOL || "https"
-    }://${githubHost}/settings/apps/new`;
+    return `${process.env.GHE_PROTOCOL || "https"}://${githubHost}${
+      process.env.GH_ORG ? "/organizations/".concat(process.env.GH_ORG) : ""
+    }/settings/apps/new`;
   }
 }

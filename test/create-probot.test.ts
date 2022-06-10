@@ -1,4 +1,5 @@
 import { createProbot, Probot } from "../src";
+import { captureLogOutput } from "./helpers/capture-log-output";
 
 const env = {
   APP_ID: "1",
@@ -33,6 +34,7 @@ describe("createProbot", () => {
 
   test("defaults, overrides", () => {
     const probot = createProbot({
+      env,
       defaults: { logLevel: "debug" },
       overrides: { logLevel: "trace" },
     });
@@ -60,5 +62,42 @@ describe("createProbot", () => {
       overrides: { logLevel: "trace" },
     });
     expect(probot.log.level).toEqual("trace");
+  });
+
+  test("env, logger message key", async () => {
+    const outputData = await captureLogOutput(() => {
+      const probot = createProbot({
+        env: {
+          ...env,
+          LOG_LEVEL: "info",
+          LOG_FORMAT: "json",
+          LOG_MESSAGE_KEY: "myMessage",
+        },
+        defaults: { logLevel: "trace" },
+      });
+
+      probot.log.info("Ciao");
+    });
+    expect(JSON.parse(outputData).myMessage).toEqual("Ciao");
+  });
+
+  test("env, octokit logger set", async () => {
+    const outputData = await captureLogOutput(async () => {
+      const probot = createProbot({
+        env: {
+          ...env,
+          LOG_LEVEL: "info",
+          LOG_FORMAT: "json",
+          LOG_MESSAGE_KEY: "myMessage",
+        },
+      });
+
+      const octokit = await probot.auth();
+      octokit.log.info("Ciao");
+    });
+    expect(JSON.parse(outputData)).toMatchObject({
+      myMessage: "Ciao",
+      name: "octokit",
+    });
   });
 });
